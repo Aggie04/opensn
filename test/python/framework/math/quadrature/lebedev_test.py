@@ -8,7 +8,6 @@ the octant optimization functionality.
 """
 
 import os
-import math
 
 
 def split_string(input_str, separator):
@@ -50,11 +49,33 @@ def write_quadrature_to_file(quadrature, filename):
             file.write(f"{omega.x},{omega.y},{omega.z},{weight}\n")
 
 
+def find_opensn_root(current_path=None):
+    """Find the opensn root directory by traversing up from the current path."""
+    if current_path is None:
+        current_path = os.path.dirname(os.path.abspath(__file__))
+
+    # Start from the current directory and traverse up
+    path = current_path
+    while True:
+        # Check if we've reached the root of the filesystem
+        if path == os.path.dirname(path):
+            raise RuntimeError("Could not find 'opensn' directory in path hierarchy")
+
+        # Check if this directory or its parent is named 'opensn'
+        if os.path.basename(path) == "opensn":
+            return path
+
+        # Move up one directory
+        path = os.path.dirname(path)
+
+
+root_path = find_opensn_root()
+quad_path = os.path.join(root_path, "framework/math/quadratures/angular/lebedev_orders")
+
 # --- Lebedev Quadrature Test 1 ---
 # Create a Lebedev quadrature of order 7
 print("\n--- Testing Lebedev Quadrature, Order 7 ---")
-quad_path = "/root/opensn/framework/math/quadratures/angular/lebedev_orders"
-leb_quad1 = LebedevQuadrature(7, quad_path, False)
+leb_quad1 = LebedevQuadrature(7, quad_path)
 
 # Write quadrature to file for inspection
 write_quadrature_to_file(leb_quad1, "LebedevTest1")
@@ -64,7 +85,7 @@ print(f"Weight-Sum-1={quad1_sum:.3e}\n\n")
 # --- Lebedev Quadrature Test 2 ---
 # Create a higher order Lebedev quadrature
 print("\n--- Testing Lebedev Quadrature, Order 15 ---")
-leb_quad2 = LebedevQuadrature(15, quad_path, False)
+leb_quad2 = LebedevQuadrature(15, quad_path)
 
 # Write optimized quadrature to file
 write_quadrature_to_file(leb_quad2, "LebedevTest2")

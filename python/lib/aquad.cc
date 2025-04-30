@@ -353,11 +353,11 @@ WrapLebedevQuadrature(py::module& aquad)
   
   lebedev_quadrature.def(
     py::init(
-      [](int order, const std::string& base_path, bool verbose)
+      [](int order, bool verbose)
       {
         try {
           // Use the 3-parameter constructor directly
-          return std::make_shared<LebedevQuadrature>(order, base_path, verbose);
+          return std::make_shared<LebedevQuadrature>(order, verbose);
         }
         catch (const std::exception& e) {
           // Convert C++ exceptions to Python exceptions
@@ -379,44 +379,23 @@ WrapLebedevQuadrature(py::module& aquad)
         Whether to print verbose output during initialization.
     )",
     py::arg("order"),
-    py::arg("base_path"),
     py::arg("verbose") = false
   );
   
   lebedev_quadrature.def(
-    "LoadFromFile",
-    &LebedevQuadrature::LoadFromFile,
+    "LoadFromOrder",
+    &LebedevQuadrature::LoadFromOrder,
     R"(
-    Loads quadrature points from a file.
+    Loads quadrature points from an Order.
 
     Parameters
     ----------
     order: int
         The order of the quadrature.
-    base_path: str
-        Path to the directory containing Lebedev quadrature files.
     verbose: bool, default=False
         Whether to print verbose output during loading.
     )",
     py::arg("order"),
-    py::arg("base_path"),
-    py::arg("verbose") = false
-  );
-  
-  lebedev_quadrature.def(
-    "OptimizeForOctant",
-    &LebedevQuadrature::OptimizeForOctant,
-    R"(
-    Optimizes the quadrature for the first octant (x ≥ 0, y ≥ 0, z ≥ 0).
-
-    Parameters
-    ----------
-    normalization: float
-        Value to normalize the weights to. If ≤ 0, no normalization is performed.
-    verbose: bool, default=False
-        Whether to print verbose output during optimization.
-    )",
-    py::arg("normalization"),
     py::arg("verbose") = false
   );
   // clang-format on
